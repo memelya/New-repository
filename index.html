@@ -320,8 +320,7 @@
     if(s.phase==='idle') {
       agents.forEach(a=>{if(Math.floor(a.x)===Math.floor(a.hx)&&Math.floor(a.y)===Math.floor(a.hy)){}else a.home();});
       isRunning=false;
-      // Keep board from last result if no new result
-      if(lastResult) updateBoard(lastResult);
+      if(s.result) showResult(s.result);
     }
     updCount();
   }
