@@ -1,8 +1,8 @@
 {
-  "version": 36,
+  "version": 37,
   "task": "Analyze: Aston Villa vs Nottingham Forest (UEL)",
   "phase": "discussing",
-  "timestamp": "2026-05-07T12:00:18.210Z",
+  "timestamp": "2026-05-07T12:00:28.530Z",
   "agent_states": {
     "CLAUDE": {
       "dialogue": "Villa at home in UEL:\\nstrong form, Watkins\\n28 goals this season.",
@@ -45,7 +45,7 @@
       "duration": 300
     },
     "LLAMA": {
-      "dialogue": "Watkins vs Murillo\\nis the key.\\nVilla striker inform.",
+      "dialogue": "Murillo vs Watkins\\nkey duel. Wood\\nthreat on set pieces.",
       "target": {
         "x": 7.5,
         "y": 7.5
@@ -53,7 +53,7 @@
       "duration": 280
     },
     "DEEPSEEK": {
-      "dialogue": "Midfield: McGinn+\\nTielemans control.\\nForest need Yates.",
+      "dialogue": "Midfield: McGinn+\\nTielemans creative.\\nForest need Yates.",
       "target": {
         "x": 8.5,
         "y": 7.5
@@ -61,7 +61,7 @@
       "duration": 280
     },
     "COPILOT": {
-      "dialogue": "Set pieces could\\ndecide it. Villa\\ntall and dangerous.",
+      "dialogue": "Villa Park sold out.\\nRef from Germany.\\nNo major injuries.",
       "target": {
         "x": 9.5,
         "y": 7.5
