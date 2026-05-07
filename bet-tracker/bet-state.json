@@ -43,12 +43,12 @@
     {
       "date": "2026-05-07",
       "tournament": "Russian Cup",
-      "match": "Krasnodar 0-0 Dinamo Moscow",
+      "match": "Krasnodar 0-0 Dinamo (Krasnodar pens)",
       "bet": "Draw + Krasnodar pens",
       "stake": 1,
       "odds": 3.5,
-      "result": "pending",
-      "pl": "0.00"
+      "result": "won",
+      "pl": "+3.50"
     },
     {
       "date": "2026-05-07",
@@ -61,5 +61,5 @@
       "pl": "0.00"
     }
   ],
-  "updated": "2026-05-07T22:24:23.450Z"
+  "updated": "2026-05-07T22:26:19.944Z"
 }
