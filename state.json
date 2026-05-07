@@ -1,78 +1,10 @@
 {
-  "version": 45,
-  "task": "null",
+  "version": 46,
+  "task": null,
   "phase": "idle",
-  "timestamp": "2026-05-07T12:16:45.326Z",
-  "agent_states": {
-    "CLAUDE": {
-      "dialogue": "Villa at home in UEL:\\nstrong form, Watkins\\n28 goals this season.",
-      "target": {
-        "x": 7.5,
-        "y": 6.5
-      },
-      "duration": 280
-    },
-    "GPT": {
-      "dialogue": "Forest away record:\\nsolid defense but\\nstruggle vs top 6.",
-      "target": {
-        "x": 8.5,
-        "y": 6.5
-      },
-      "duration": 280
-    },
-    "LOUIS": {
-      "dialogue": "I'll compile the\\nfinal report.",
-      "target": {
-        "x": 10.5,
-        "y": 7.5
-      },
-      "duration": 250
-    },
-    "GEMINI": {
-      "dialogue": "Stats: Villa 65%\\npossession avg.\\nForest counter 40%.",
-      "target": {
-        "x": 9.5,
-        "y": 6.5
-      },
-      "duration": 280
-    },
-    "MISTRAL": {
-      "dialogue": "Forest counter-attack:\\nElanga pace vs\\nVilla high line.",
-      "target": {
-        "x": 7.5,
-        "y": 7.5
-      },
-      "duration": 300
-    },
-    "LLAMA": {
-      "dialogue": "Murillo vs Watkins\\nkey duel. Wood\\nthreat on set pieces.",
-      "target": {
-        "x": 7.5,
-        "y": 7.5
-      },
-      "duration": 280
-    },
-    "DEEPSEEK": {
-      "dialogue": "Midfield: McGinn+\\nTielemans creative.\\nForest need Yates.",
-      "target": {
-        "x": 8.5,
-        "y": 7.5
-      },
-      "duration": 280
-    },
-    "COPILOT": {
-      "dialogue": "Villa Park sold out.\\nRef from Germany.\\nNo major injuries.",
-      "target": {
-        "x": 9.5,
-        "y": 7.5
-      },
-      "duration": 280
-    }
-  },
-  "meeting_point": {
-    "x": 9,
-    "y": 7
-  },
+  "timestamp": "2026-05-07T12:17:00.000Z",
+  "agent_states": {},
+  "meeting_point": null,
   "result": {
     "tournament": "UEFA Europa League 2025/26 — Semi-final",
     "teams": "Aston Villa 🆚 Nottingham Forest",
