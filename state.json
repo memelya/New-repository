@@ -1,8 +1,8 @@
 {
-  "version": 23,
-  "task": "Analyze: Aston Villa vs Nottingham Forest (UEL)",
-  "phase": "complete",
-  "timestamp": "2026-05-07T11:43:14.929Z",
+  "version": 24,
+  "task": "null",
+  "phase": "idle",
+  "timestamp": "2026-05-07T11:43:19.311Z",
   "agent_states": {
     "CLAUDE": {
       "dialogue": "Villa Park fortress.\\nEmery's European\\nrecord is elite.",
@@ -65,10 +65,5 @@
     "x": 9,
     "y": 7
   },
-  "result": {
-    "winner": "Aston Villa",
-    "score": "2 : 1",
-    "analysis": "MAIN AGENT REPORT: Both English sides know each other well from PL. Villa Park crowd gives Villa the edge. Emery's European pedigree vs Forest's defensive discipline. Key factor: Watkins' movement against Forest backline. Prediction: Villa 2-1 — narrow win, Watkins and Tielemans decisive. Forest will push late.",
-    "highlight_agent": "LOUIS"
-  }
+  "result": null
 }
