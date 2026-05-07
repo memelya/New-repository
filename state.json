@@ -1,8 +1,8 @@
 {
-  "version": 31,
-  "task": "Analyze: Aston Villa vs Nottingham Forest (UEL)",
-  "phase": "complete",
-  "timestamp": "2026-05-07T11:57:48.389Z",
+  "version": 32,
+  "task": "null",
+  "phase": "idle",
+  "timestamp": "2026-05-07T11:58:39.044Z",
   "agent_states": {
     "CLAUDE": {
       "dialogue": "Villa Park atmosphere.\\nEmery knows how\\nto win in Europe.",
@@ -73,13 +73,5 @@
     "x": 9,
     "y": 7
   },
-  "result": {
-    "tournament": "UEFA Europa League 2025/26 — Semi-final",
-    "teams": "Aston Villa vs Nottingham Forest",
-    "winner": "Aston Villa",
-    "score": "2 : 1",
-    "analysis": "MAIN AGENT REPORT: Villa Park crowd + Emery European pedigree = edge. Key factor: Watkins movement. Prediction: Villa 2-1.",
-    "bet": "Villa win + Both Teams to Score (BTTS) @ 3.40",
-    "highlight_agent": "LOUIS"
-  }
+  "result": null
 }
