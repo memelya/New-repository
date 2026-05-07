@@ -76,6 +76,20 @@
   .result-score { color:#e94560; font-size:clamp(10px,3vw,16px); margin-bottom:8px; }
   .result-analysis { color:#a0a0c0; font-size:clamp(7px,1.8vw,10px); line-height:1.6; max-width:90%; }
   .result-dismiss { margin-top:12px; background:#e94560; border:none; border-radius:4px; padding:8px 16px; color:#fff; font-family:'Press Start 2P',monospace; font-size:clamp(6px,1.5vw,8px); cursor:pointer; }
+
+  .res-board {
+    margin-top:8px; padding:8px 12px;
+    background:#0f3460; border:2px solid #533483; border-radius:4px;
+    font-size:clamp(7px,1.8vw,9px);
+    display:none;
+  }
+  .res-board.show { display:block; }
+  .res-board .rb-title { color:#f0e68c; font-size:clamp(6px,1.5vw,8px); margin-bottom:6px; }
+  .res-board table { width:100%; border-collapse:collapse; }
+  .res-board td { padding:3px 6px; color:#a0a0c0; vertical-align:top; }
+  .res-board td.label { color:#e94560; white-space:nowrap; width:1%; padding-right:12px; }
+  .res-board td.val { color:#fff; }
+  .res-board .bet { color:#53d769; font-weight:bold; }
   @media (max-height:500px) {
     body { padding:4px; }
     .game-container { padding:6px; } .header { padding:4px 8px; margin-bottom:4px; }
@@ -111,6 +125,15 @@
   <div class="status-bar">
     <span id="statusText">🟢 READY</span>
     <span class="highlight" id="activityText"></span>
+  </div>
+  <div class="res-board" id="resBoard">
+    <div class="rb-title">── LAST ANALYSIS ──</div>
+    <table>
+      <tr><td class="label">TOURNAMENT</td><td class="val" id="rbTournament">—</td></tr>
+      <tr><td class="label">TEAMS</td><td class="val" id="rbTeams">—</td></tr>
+      <tr><td class="label">PREDICTION</td><td class="val" id="rbPrediction">—</td></tr>
+      <tr><td class="label">REC. BET</td><td class="val bet" id="rbBet">—</td></tr>
+    </table>
   </div>
 </div>
 
@@ -306,6 +329,13 @@
     document.getElementById('resultScore').textContent=r.score||'';
     document.getElementById('resultAnalysis').textContent=r.analysis||'';
     ro.classList.add('show');
+    // Update results board
+    const board=document.getElementById('resBoard');
+    document.getElementById('rbTournament').textContent=r.tournament||'—';
+    document.getElementById('rbTeams').textContent=r.teams||'—';
+    document.getElementById('rbPrediction').textContent=(r.winner||'')+(r.score?' ('+r.score+')':'')||'—';
+    document.getElementById('rbBet').textContent=r.bet||r.recommended_bet||'—';
+    board.classList.add('show');
   }
 
   // ─── HELPERS ─────────────────────────────────────────────
