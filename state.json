@@ -1,8 +1,8 @@
 {
-  "version": 49,
+  "version": 50,
   "task": "Analysis: Krasnodar vs Dinamo (Russian Cup)",
-  "phase": "discussing",
-  "timestamp": "2026-05-07T15:13:11.124Z",
+  "phase": "complete",
+  "timestamp": "2026-05-07T15:13:18.305Z",
   "agent_states": {
     "CLAUDE": {
       "dialogue": "Krasnodar strong at\\nhome. Cordoba and\\nSpertsyan key.",
@@ -34,12 +34,12 @@
     "y": 7
   },
   "result": {
-    "tournament": "UEFA Europa League 2025/26 — Semi-final",
-    "teams": "Aston Villa 🆚 Nottingham Forest",
-    "winner": "Aston Villa to win",
-    "score": "2 : 1",
-    "analysis": "MAIN AGENT REPORT: Villa Park fortress + Emery European expertise. Watkins 28 goals this season. Forest disciplined but lack knockout experience. Prediction: Villa 2-1 at home.",
-    "bet": "Aston Villa win + BTTS @ 3.40",
+    "tournament": "Russian Cup 2025/26",
+    "teams": "Krasnodar 🆚 Dinamo Moscow",
+    "winner": "Draw (Krasnodar to advance on penalties)",
+    "score": "1 : 1 (4:3 pens)",
+    "analysis": "MAIN AGENT REPORT: Krasnodar at home in Krasnodar Stadium. Both teams in top form in RPL. Key battles: Cordoba vs Marichal, Spertsyan creativity vs Dinamo midfield. Russian Cup often sees tight knockout matches. Home crowd could push Krasnodar over the line.",
+    "bet": "Draw @ 3.50 + Krasnodar to qualify. BTTS likely.",
     "highlight_agent": "LOUIS"
   }
 }
