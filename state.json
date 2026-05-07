@@ -1,8 +1,8 @@
 {
-  "version": 46,
-  "task": null,
-  "phase": "idle",
-  "timestamp": "2026-05-07T12:17:00.000Z",
+  "version": 47,
+  "task": "Match 1: Aston Villa vs Forest (UEL) + Match 2: Krasnodar vs Dinamo (Russian Cup)",
+  "phase": "task_received",
+  "timestamp": "2026-05-07T15:12:56.638Z",
   "agent_states": {},
   "meeting_point": null,
   "result": {
