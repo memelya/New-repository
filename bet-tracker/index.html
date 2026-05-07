@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>Bet Tracker — Win/Loss Stats</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    background:#0f0f23; font-family:'Press Start 2P',monospace; padding:12px;
+    color:#a0a0c0; min-height:100vh; display:flex; justify-content:center;
+  }
+  .container { max-width:900px; width:100%; }
+
+  .header {
+    background:#16213e; border:3px solid #e94560; border-radius:6px;
+    padding:12px 16px; margin-bottom:12px; text-align:center;
+  }
+  .header h1 { color:#e94560; font-size:clamp(10px,3vw,16px); text-shadow:2px 2px #0f0f23; letter-spacing:2px; }
+  .header p { color:#f0e68c; font-size:clamp(6px,1.5vw,8px); margin-top:6px; }
+
+  /* Stats cards */
+  .stats-row {
+    display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin-bottom:12px;
+  }
+  .stat-card {
+    background:#16213e; border:2px solid #533483; border-radius:4px; padding:10px; text-align:center;
+  }
+  .stat-card .label { font-size:clamp(5px,1.2vw,7px); color:#a0a0c0; margin-bottom:4px; }
+  .stat-card .value { font-size:clamp(10px,2.5vw,16px); font-weight:bold; }
+  .stat-card .value.green { color:#53d769; }
+  .stat-card .value.red { color:#e94560; }
+  .stat-card .value.yellow { color:#f0e68c; }
+
+  /* Chart */
+  .chart-box {
+    background:#16213e; border:2px solid #533483; border-radius:4px; padding:12px; margin-bottom:12px;
+  }
+  .chart-box .title { color:#f0e68c; font-size:clamp(6px,1.5vw,8px); margin-bottom:8px; }
+  canvas#profitChart { width:100%; height:200px; background:#0f0f23; border:1px solid #2a2a4a; border-radius:4px; display:block; image-rendering:pixelated; }
+
+  /* History table */
+  .table-box {
+    background:#16213e; border:2px solid #533483; border-radius:4px; padding:12px; margin-bottom:12px;
+  }
+  .table-box .title { color:#f0e68c; font-size:clamp(6px,1.5vw,8px); margin-bottom:8px; }
+
+  .bet-table { width:100%; border-collapse:collapse; font-size:clamp(6px,1.3vw,8px); }
+  .bet-table th { color:#e94560; text-align:left; padding:6px 4px; border-bottom:2px solid #533483; font-weight:normal; }
+  .bet-table td { padding:5px 4px; border-bottom:1px solid #2a2a4a; color:#a0a0c0; }
+  .bet-table .won { color:#53d769; }
+  .bet-table .lost { color:#e94560; }
+  .bet-table .pending { color:#f0e68c; }
+
+  .footer { text-align:center; font-size:clamp(5px,1vw,7px); color:#533483; margin-top:12px; }
+
+  /* Status indicator */
+  .status { display:flex; gap:12px; align-items:center; margin-top:8px; justify-content:center; font-size:clamp(6px,1.2vw,8px); }
+  .status .dot { width:6px; height:6px; border-radius:50%; display:inline-block; }
+  .status .dot.green { background:#53d769; }
+  .status .dot.red { background:#e94560; }
+  .status .dot.yellow { background:#f0e68c; }
+
+  @media (max-width:500px) {
+    .stats-row { grid-template-columns:repeat(2,1fr); gap:6px; }
+    .bet-table { font-size:clamp(5px,1vw,7px); }
+    .bet-table th, .bet-table td { padding:4px 2px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>⚽ BET TRACKER ▌</h1>
+    <p>WIN / LOSS STATISTICS · LAST 3 DAYS</p>
+    <div class="status">
+      <span class="dot green"></span> WON &nbsp;|&nbsp;
+      <span class="dot red"></span> LOST &nbsp;|&nbsp;
+      <span class="dot yellow"></span> PENDING &nbsp;|&nbsp;
+      <span id="lastUpdate">Loading...</span>
+    </div>
+  </div>
+
+  <div class="stats-row">
+    <div class="stat-card"><div class="label">TOTAL BETS</div><div class="value yellow" id="totalBets">0</div></div>
+    <div class="stat-card"><div class="label">WON</div><div class="value green" id="wonBets">0</div></div>
+    <div class="stat-card"><div class="label">LOST</div><div class="value red" id="lostBets">0</div></div>
+    <div class="stat-card"><div class="label">PROFIT/LOSS</div><div class="value" id="profitLoss">0</div></div>
+  </div>
+
+  <div class="chart-box">
+    <div class="title">── DAILY PROFIT / LOSS ──</div>
+    <canvas id="profitChart" width="800" height="200"></canvas>
+  </div>
+
+  <div class="table-box">
+    <div class="title">── BET HISTORY ──</div>
+    <table class="bet-table" id="betTable">
+      <thead>
+        <tr>
+          <th>DATE</th>
+          <th>TOURNAMENT</th>
+          <th>MATCH</th>
+          <th>BET</th>
+          <th>STAKE</th>
+          <th>ODDS</th>
+          <th>RESULT</th>
+          <th>P/L</th>
+        </tr>
+      </thead>
+      <tbody id="betBody"></tbody>
+    </table>
+  </div>
+
+  <div class="footer">DATA UPDATED FROM state.json · CACHE-BUSTED POLLING</div>
+</div>
+
+<script>
+(function() {
+  const DATA_URL = 'https://raw.githubusercontent.com/memelya/New-repository/main/bet-state.json';
+
+  // Default data if fetch fails
+  const FALLBACK_DATA = {
+    bets: [
+      { date:"2026-05-05", tournament:"UEL Semi 1st leg", match:"Braga vs Freiburg", bet:"Braga win + BTTS", stake:1, odds:2.80, result:"won", pl:"+2.80" },
+      { date:"2026-05-06", tournament:"UEL Semi 2nd leg", match:"Freiburg vs Braga", bet:"Freiburg 2-0", stake:1, odds:3.20, result:"lost", pl:"-1.00" },
+      { date:"2026-05-06", tournament:"UEL Semi", match:"Villa vs Brighton", bet:"Villa win", stake:1, odds:1.90, result:"pending", pl:"0.00" },
+      { date:"2026-05-07", tournament:"UEL Semi-final", match:"Aston Villa vs Nott'm Forest", bet:"Villa win + BTTS", stake:2, odds:3.40, result:"pending", pl:"0.00" },
+      { date:"2026-05-07", tournament:"Russian Cup", match:"Krasnodar vs Dinamo", bet:"Draw + Krasnodar pens", stake:1, odds:3.50, result:"pending", pl:"0.00" },
+      { date:"2026-05-07", tournament:"UEL Semi-final", match:"Freiburg vs Braga", bet:"Braga qualify", stake:1, odds:2.10, result:"pending", pl:"0.00" },
+    ]
+  };
+
+  let data = null;
+
+  function updateUI(d) {
+    const bets = d.bets || [];
+    const total = bets.length;
+    const won = bets.filter(b=>b.result==='won').length;
+    const lost = bets.filter(b=>b.result==='lost').length;
+    const pending = bets.filter(b=>b.result==='pending').length;
+    const profit = bets.reduce((sum,b)=>sum+parseFloat(b.pl||0),0);
+
+    document.getElementById('totalBets').textContent=total;
+    document.getElementById('wonBets').textContent=won;
+    document.getElementById('lostBets').textContent=lost;
+
+    const plEl=document.getElementById('profitLoss');
+    plEl.textContent=(profit>0?'+':'')+profit.toFixed(2);
+    plEl.className='value '+(profit>0?'green':profit<0?'red':'yellow');
+
+    // Draw chart
+    drawChart(bets);
+    // Draw table
+    drawTable(bets);
+
+    document.getElementById('lastUpdate').textContent = 'Updated: '+d.updated||new Date().toLocaleString();
+  }
+
+  function drawChart(bets) {
+    const cv = document.getElementById('profitChart');
+    const ctx = cv.getContext('2d');
+    const W=800, H=200;
+    ctx.clearRect(0,0,W,H);
+
+    // Group by date
+    const days = {};
+    bets.forEach(b=>{
+      const d=b.date;
+      if(!days[d]) days[d]={won:0,lost:0,pl:0};
+      days[d].pl += parseFloat(b.pl||0);
+    });
+
+    const dates = Object.keys(days).sort();
+    const maxPl = Math.max(...dates.map(d=>Math.abs(days[d].pl)), 1);
+    const barW = Math.min(60, (W-60)/dates.length);
+    const padL=40, padR=20, padT=20, padB=20;
+    const chartW=W-padL-padR, chartH=H-padT-padB;
+    const midY=padT+chartH/2;
+
+    // Grid lines
+    ctx.strokeStyle='#2a2a4a'; ctx.lineWidth=0.5;
+    [-1,0,1].forEach(i=>{
+      const y=midY-i*(chartH/2/maxPl)*maxPl;
+      ctx.beginPath(); ctx.moveTo(padL,y); ctx.lineTo(W-padR,y); ctx.stroke();
+    });
+
+    // Labels
+    ctx.fillStyle='#533483'; ctx.font='8px monospace'; ctx.textAlign='center';
+    dates.forEach((d,i)=>{
+      const x=padL+i*barW+barW/2;
+      const short=d.slice(5);
+      ctx.fillText(short,x,H-4);
+    });
+
+    // Y axis label
+    ctx.fillStyle='#533483'; ctx.textAlign='right'; ctx.textBaseline='middle';
+    ctx.fillText('+'+(maxPl).toFixed(0),padL-4,midY-chartH/2+6);
+    ctx.fillText((-(maxPl)).toFixed(0),padL-4,midY+chartH/2-6);
+    ctx.fillText('0',padL-4,midY+2);
+
+    // Zero line
+    ctx.strokeStyle='#533483'; ctx.lineWidth=1;
+    ctx.beginPath(); ctx.moveTo(padL,midY); ctx.lineTo(W-padR,midY); ctx.stroke();
+
+    // Bars
+    dates.forEach((d,i)=>{
+      const x=padL+i*barW;
+      const pl=days[d].pl;
+      const barH=(Math.abs(pl)/maxPl)*(chartH/2);
+      const y=pl>=0?midY-barH:midY;
+
+      ctx.fillStyle=pl>0?'#53d769':pl<0?'#e94560':'#f0e68c';
+      ctx.fillRect(x+4,y,barW-8,Math.max(barH||0,2));
+
+      // Value on bar
+      if(pl!==0){
+        ctx.fillStyle='#fff'; ctx.font='7px monospace'; ctx.textAlign='center';
+        ctx.fillText((pl>0?'+':'')+pl.toFixed(1),x+barW/2,pl>0?y-4:y+barH+10);
+      }
+    });
+
+    // Title on chart
+    ctx.fillStyle='#533483'; ctx.font='7px monospace'; ctx.textAlign='left'; ctx.textBaseline='top';
+    ctx.fillText('▲ WIN / ▼ LOSS',padL,padT-2);
+    ctx.textBaseline='alphabetic';
+  }
+
+  function drawTable(bets) {
+    const tbody=document.getElementById('betBody');
+    tbody.innerHTML='';
+    bets.forEach(b=>{
+      const tr=document.createElement('tr');
+      const resultClass=b.result==='won'?'won':b.result==='lost'?'lost':'pending';
+      const plVal=parseFloat(b.pl||0);
+      const plClass=plVal>0?'won':plVal<0?'lost':'pending';
+      tr.innerHTML=\`
+        <td>\${b.date||'—'}</td>
+        <td>\${b.tournament||'—'}</td>
+        <td>\${b.match||'—'}</td>
+        <td>\${b.bet||'—'}</td>
+        <td>\${b.stake||'—'}</td>
+        <td>x\${b.odds||'—'}</td>
+        <td class="\${resultClass}">\${b.result.toUpperCase()}</td>
+        <td class="\${plClass}">\${plVal>0?'+':''}\${b.pl||'0.00'}</td>
+      \`;
+      tbody.appendChild(tr);
+    });
+  }
+
+  async function fetchData() {
+    try {
+      const r = await fetch(DATA_URL+'?t='+Date.now());
+      if(r.ok) {
+        const d = await r.json();
+        if(d && d.bets && d.bets.length > 0) { data = d; updateUI(d); return; }
+      }
+    } catch(e) {}
+    // Fallback to hardcoded data
+    data = FALLBACK_DATA;
+    updateUI(FALLBACK_DATA);
+  }
+
+  document.addEventListener('DOMContentLoaded',()=>{ fetchData(); setInterval(fetchData,5000); });
+  if(document.readyState!=='loading') { fetchData(); setInterval(fetchData,5000); }
+})();
+</script>
+</body>
+</html>
