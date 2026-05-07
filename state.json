@@ -1,11 +1,11 @@
 {
-  "version": 20,
+  "version": 21,
   "task": "Analyze: Aston Villa vs Nottingham Forest (UEL)",
-  "phase": "walking",
-  "timestamp": "2026-05-07T11:42:54.022Z",
+  "phase": "discussing",
+  "timestamp": "2026-05-07T11:43:00.754Z",
   "agent_states": {
     "CLAUDE": {
-      "dialogue": "Aston Villa strong at\\nhome in Europe.\\nEmery's tactics key.",
+      "dialogue": "Villa Park fortress.\\nEmery's European\\nrecord is elite.",
       "target": {
         "x": 7.5,
         "y": 6.5
@@ -13,7 +13,7 @@
       "duration": 300
     },
     "GPT": {
-      "dialogue": "Forest solid in knockout\\nties. Defensive\\napproach away.",
+      "dialogue": "Forest solid away.\\nGibbs-White creative\\nspark needed.",
       "target": {
         "x": 8.5,
         "y": 6.5
@@ -29,7 +29,7 @@
       "duration": 250
     },
     "GEMINI": {
-      "dialogue": "Key battle: Watkins vs\\nMilenkovic. \\nVilla press high.",
+      "dialogue": "Key stats:\\nVilla scored in 8/10\\nhome Euro games.",
       "target": {
         "x": 9.5,
         "y": 6.5
