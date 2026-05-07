@@ -1,8 +1,8 @@
 {
-  "version": 24,
-  "task": "null",
-  "phase": "idle",
-  "timestamp": "2026-05-07T11:43:19.311Z",
+  "version": 25,
+  "task": "Analyze: Aston Villa vs Nottingham Forest (UEL)",
+  "phase": "task_received",
+  "timestamp": "2026-05-07T11:44:44.425Z",
   "agent_states": {
     "CLAUDE": {
       "dialogue": "Villa Park fortress.\\nEmery's European\\nrecord is elite.",
