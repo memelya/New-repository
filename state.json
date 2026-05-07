@@ -1,8 +1,8 @@
 {
-  "version": 38,
-  "task": "Analyze: Aston Villa vs Nottingham Forest (UEL)",
-  "phase": "complete",
-  "timestamp": "2026-05-07T12:00:35.782Z",
+  "version": 39,
+  "task": "null",
+  "phase": "idle",
+  "timestamp": "2026-05-07T12:00:40.891Z",
   "agent_states": {
     "CLAUDE": {
       "dialogue": "Villa at home in UEL:\\nstrong form, Watkins\\n28 goals this season.",
@@ -73,13 +73,5 @@
     "x": 9,
     "y": 7
   },
-  "result": {
-    "tournament": "UEFA Europa League 2025/26 — Semi-final",
-    "teams": "Aston Villa 🆚 Nottingham Forest",
-    "winner": "Aston Villa to win",
-    "score": "2 : 1",
-    "analysis": "MAIN AGENT REPORT: Villa Park fortress + Emery European expertise. Watkins in form (28 goals). Forest disciplined but lack knockout experience at this stage. Key battles: McGinn/Tielemans controlling midfield vs Forest counter through Elanga/Gibbs-White. Set pieces could decide — both teams dangerous from corners. Prediction: Villa edge it at home.",
-    "bet": "Aston Villa win + BTTS @ 3.40 — both teams score, Villa take it 2-1",
-    "highlight_agent": "LOUIS"
-  }
+  "result": null
 }
