@@ -1,8 +1,8 @@
 {
-  "version": 27,
+  "version": 28,
   "task": "Analyze: Aston Villa vs Nottingham Forest (UEL)",
   "phase": "discussing",
-  "timestamp": "2026-05-07T11:44:57.088Z",
+  "timestamp": "2026-05-07T11:45:03.807Z",
   "agent_states": {
     "CLAUDE": {
       "dialogue": "Villa Park atmosphere.\\nEmery knows how\\nto win in Europe.",
@@ -45,20 +45,28 @@
       "duration": 300
     },
     "LLAMA": {
-      "dialogue": "Watkins vs Murillo\\nis the key duel.\\nVilla striker inform.",
+      "dialogue": "Watkins vs Murillo\\nis the key.\\nVilla striker inform.",
+      "target": {
+        "x": 7.5,
+        "y": 7.5
+      },
+      "duration": 280
+    },
+    "DEEPSEEK": {
+      "dialogue": "Midfield: McGinn+\\nTielemans control.\\nForest need Yates.",
       "target": {
         "x": 8.5,
         "y": 7.5
       },
-      "duration": 300
+      "duration": 280
     },
-    "DEEPSEEK": {
-      "dialogue": "Midfield battle:\\nMcGinn+Youri vs\\nDanilo+Yates.",
+    "COPILOT": {
+      "dialogue": "Set pieces could\\ndecide it. Villa\\ntall and dangerous.",
       "target": {
         "x": 9.5,
         "y": 7.5
       },
-      "duration": 300
+      "duration": 280
     }
   },
   "meeting_point": {
