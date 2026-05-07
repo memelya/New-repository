@@ -1,8 +1,8 @@
 {
-  "version": 8,
+  "version": 9,
   "task": "Analyze: Freiburg vs Braga (Europa League SF)",
   "phase": "discussing",
-  "timestamp": "2026-05-07T11:29:29.304Z",
+  "timestamp": "2026-05-07T11:29:36.484Z",
   "agent_states": {
     "CLAUDE": {
       "dialogue": "First leg: Braga 2-1.\\nFreiburg needs 1-0\\nor 2 goal win.",
@@ -33,6 +33,30 @@
       "target": {
         "x": 9.5,
         "y": 6.5
+      },
+      "duration": 300
+    },
+    "MISTRAL": {
+      "dialogue": "Freiburg home form:\\nEuropa-Park Stadion.\\nThey must attack.",
+      "target": {
+        "x": 7.5,
+        "y": 7.5
+      },
+      "duration": 300
+    },
+    "LLAMA": {
+      "dialogue": "Grifo and Ginter\\nkey for Freiburg.\\nMoutinho for Braga.",
+      "target": {
+        "x": 8.5,
+        "y": 7.5
+      },
+      "duration": 300
+    },
+    "DEEPSEEK": {
+      "dialogue": "Braga 3-4-2-1 vs\\nFreiburg 4-2-3-1.\\nBraga more defensive.",
+      "target": {
+        "x": 9.5,
+        "y": 7.5
       },
       "duration": 300
     }
