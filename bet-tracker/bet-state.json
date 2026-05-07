@@ -33,12 +33,12 @@
     {
       "date": "2026-05-07",
       "tournament": "UEL Semi-final",
-      "match": "Aston Villa vs Nottingham Forest",
+      "match": "Aston Villa 4-0 Nottingham Forest",
       "bet": "Villa win + BTTS",
       "stake": 2,
       "odds": 3.4,
-      "result": "pending",
-      "pl": "0.00"
+      "result": "lost",
+      "pl": "-2.00"
     },
     {
       "date": "2026-05-07",
@@ -61,5 +61,5 @@
       "pl": "0.00"
     }
   ],
-  "updated": "2026-05-07T22:26:19.944Z"
+  "updated": "2026-05-07T22:27:35.643Z"
 }
