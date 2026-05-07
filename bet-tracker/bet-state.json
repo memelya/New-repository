@@ -1,11 +1,65 @@
 {
   "bets": [
-    { "date":"2026-05-05", "tournament":"UEL Semi 1st leg", "match":"Braga vs Freiburg", "bet":"Braga win + BTTS", "stake":1, "odds":2.80, "result":"won", "pl":"+2.80" },
-    { "date":"2026-05-06", "tournament":"UEL Semi 2nd leg", "match":"Freiburg vs Braga", "bet":"Freiburg 2-0 win", "stake":1, "odds":3.20, "result":"lost", "pl":"-1.00" },
-    { "date":"2026-05-06", "tournament":"UEL Semi-final", "match":"Villa vs Brighton", "bet":"Villa win", "stake":1, "odds":1.90, "result":"pending", "pl":"0.00" },
-    { "date":"2026-05-07", "tournament":"UEL Semi-final", "match":"Aston Villa vs Nottingham Forest", "bet":"Villa win + BTTS", "stake":2, "odds":3.40, "result":"pending", "pl":"0.00" },
-    { "date":"2026-05-07", "tournament":"Russian Cup", "match":"Krasnodar vs Dinamo Moscow", "bet":"Draw + Krasnodar pens", "stake":1, "odds":3.50, "result":"pending", "pl":"0.00" },
-    { "date":"2026-05-07", "tournament":"UEL Semi-final", "match":"Freiburg vs Braga", "bet":"Braga qualify", "stake":1, "odds":2.10, "result":"pending", "pl":"0.00" }
+    {
+      "date": "2026-05-05",
+      "tournament": "UEL Semi 1st leg",
+      "match": "Braga vs Freiburg",
+      "bet": "Braga win + BTTS",
+      "stake": 1,
+      "odds": 2.8,
+      "result": "won",
+      "pl": "+2.80"
+    },
+    {
+      "date": "2026-05-06",
+      "tournament": "UEL Semi 2nd leg",
+      "match": "Freiburg vs Braga",
+      "bet": "Freiburg 2-0 win",
+      "stake": 1,
+      "odds": 3.2,
+      "result": "lost",
+      "pl": "-1.00"
+    },
+    {
+      "date": "2026-05-06",
+      "tournament": "UEL Semi-final",
+      "match": "Villa vs Brighton",
+      "bet": "Villa win",
+      "stake": 1,
+      "odds": 1.9,
+      "result": "pending",
+      "pl": "0.00"
+    },
+    {
+      "date": "2026-05-07",
+      "tournament": "UEL Semi-final",
+      "match": "Aston Villa vs Nottingham Forest",
+      "bet": "Villa win + BTTS",
+      "stake": 2,
+      "odds": 3.4,
+      "result": "pending",
+      "pl": "0.00"
+    },
+    {
+      "date": "2026-05-07",
+      "tournament": "Russian Cup",
+      "match": "Krasnodar 0-0 Dinamo Moscow",
+      "bet": "Draw + Krasnodar pens",
+      "stake": 1,
+      "odds": 3.5,
+      "result": "pending",
+      "pl": "0.00"
+    },
+    {
+      "date": "2026-05-07",
+      "tournament": "UEL Semi-final",
+      "match": "Freiburg vs Braga",
+      "bet": "Braga qualify",
+      "stake": 1,
+      "odds": 2.1,
+      "result": "pending",
+      "pl": "0.00"
+    }
   ],
-  "updated": "2026-05-07T15:20:00.000Z"
+  "updated": "2026-05-07T22:24:23.450Z"
 }
