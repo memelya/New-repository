@@ -1,8 +1,8 @@
 {
-  "version": 10,
-  "task": "Analyze: Freiburg vs Braga (Europa League SF)",
-  "phase": "complete",
-  "timestamp": "2026-05-07T11:29:43.950Z",
+  "version": 11,
+  "task": "null",
+  "phase": "idle",
+  "timestamp": "2026-05-07T11:29:48.730Z",
   "agent_states": {
     "CLAUDE": {
       "dialogue": "First leg: Braga 2-1.\\nFreiburg needs 1-0\\nor 2 goal win.",
@@ -65,10 +65,5 @@
     "x": 9,
     "y": 7
   },
-  "result": {
-    "winner": "SC Freiburg (to advance on aggregate)",
-    "score": "2 : 0 (3 : 2 agg)",
-    "analysis": "MAIN AGENT REPORT: Freiburg needs a 1-0 win at home to force extra time, or 2-0 to advance. Home advantage at Europa-Park-Stadion is significant. Braga leads 2-1 but their away form is inconsistent. Key battle: Freiburg pressing vs Braga counter-attacks through Dorgeles. Prediction: Freiburg 2-0 — home crowd and desperation factor push them through.",
-    "highlight_agent": "LOUIS"
-  }
+  "result": null
 }
