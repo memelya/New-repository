@@ -1,8 +1,8 @@
 {
-  "version": 0,
-  "task": null,
-  "phase": "idle",
-  "timestamp": null,
+  "version": 1,
+  "task": "Analyze: Barcelona vs Real Madrid",
+  "phase": "task_received",
+  "timestamp": "2026-05-07T10:40:32.672Z",
   "agent_states": {},
   "meeting_point": null,
   "result": null
