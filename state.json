@@ -1,8 +1,8 @@
 {
-  "version": 21,
+  "version": 22,
   "task": "Analyze: Aston Villa vs Nottingham Forest (UEL)",
   "phase": "discussing",
-  "timestamp": "2026-05-07T11:43:00.754Z",
+  "timestamp": "2026-05-07T11:43:07.832Z",
   "agent_states": {
     "CLAUDE": {
       "dialogue": "Villa Park fortress.\\nEmery's European\\nrecord is elite.",
@@ -37,7 +37,7 @@
       "duration": 300
     },
     "MISTRAL": {
-      "dialogue": "Villa Park atmosphere\\nis a factor. \\nForest must stay compact.",
+      "dialogue": "Forest counter-attack:\\nElanga pace vs\\nVilla high line.",
       "target": {
         "x": 7.5,
         "y": 7.5
@@ -45,7 +45,7 @@
       "duration": 300
     },
     "LLAMA": {
-      "dialogue": "Both English teams -\\nfamiliar opponents.\\nPL experience matters.",
+      "dialogue": "Watkins vs Murillo\\nis the key duel.\\nVilla striker inform.",
       "target": {
         "x": 8.5,
         "y": 7.5
@@ -53,7 +53,7 @@
       "duration": 300
     },
     "DEEPSEEK": {
-      "dialogue": "Counter-attack threat:\\nElanga & Gibbs-White\\nfor Forest.",
+      "dialogue": "Midfield battle:\\nMcGinn+Youri vs\\nDanilo+Yates.",
       "target": {
         "x": 9.5,
         "y": 7.5
