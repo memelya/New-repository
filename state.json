@@ -1,8 +1,8 @@
 {
-  "version": 33,
-  "task": "null",
-  "phase": "idle",
-  "timestamp": "2026-05-07T11:59:23.962Z",
+  "version": 34,
+  "task": "Analyze: Aston Villa vs Nottingham Forest (UEL)",
+  "phase": "task_received",
+  "timestamp": "2026-05-07T11:59:55.868Z",
   "agent_states": {
     "CLAUDE": {
       "dialogue": "Villa Park atmosphere.\\nEmery knows how\\nto win in Europe.",
