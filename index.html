@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Agent Office — Retro Top-Down</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a2e;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Press Start 2P', monospace;
+    overflow: hidden;
+  }
+
+  /* CRT scanlines */
+  body::after {
+    content: '';
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.08) 2px,
+      rgba(0,0,0,0.08) 4px
+    );
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  .game-container {
+    background: #16213e;
+    border: 4px solid #e94560;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow:
+      0 0 20px rgba(233,69,96,0.3),
+      inset 0 0 40px rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    margin-bottom: 12px;
+    background: #0f3460;
+    border: 2px solid #e94560;
+    border-radius: 4px;
+  }
+
+  .title {
+    color: #e94560;
+    font-size: 12px;
+    text-shadow: 2px 2px #0f0f23;
+    letter-spacing: 2px;
+  }
+
+  .title .blink {
+    animation: blink 1s step-end infinite;
+  }
+
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+
+  .agent-count {
+    color: #53d769;
+    font-size: 10px;
+  }
+
+  .game-screen {
+    position: relative;
+    border: 3px solid #e94560;
+    border-radius: 4px;
+    background: #0f0f23;
+    image-rendering: pixelated;
+  }
+
+  canvas {
+    display: block;
+    width: 800px;
+    height: 600px;
+    image-rendering: pixelated;
+  }
+
+  .controls {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    align-items: center;
+  }
+
+  .task-input {
+    flex: 1;
+    background: #0f3460;
+    border: 2px solid #533483;
+    border-radius: 4px;
+    padding: 10px 14px;
+    color: #e94560;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    outline: none;
+  }
+  .task-input::placeholder { color: #533483; }
+  .task-input:focus { border-color: #e94560; }
+
+  .btn {
+    background: #e94560;
+    border: none;
+    border-radius: 4px;
+    padding: 10px 18px;
+    color: #fff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    cursor: pointer;
+    transition: all 0.1s;
+    text-shadow: 1px 1px #0f0f23;
+  }
+  .btn:hover { background: #ff6b81; transform: scale(1.02); }
+  .btn:active { transform: scale(0.95); }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .status-bar {
+    display: flex;
+    gap: 16px;
+    margin-top: 10px;
+    padding: 6px 12px;
+    background: #0f3460;
+    border: 1px solid #533483;
+    border-radius: 4px;
+    font-size: 8px;
+    color: #a0a0c0;
+  }
+
+  .status-bar .highlight {
+    color: #f0e68c;
+  }
+</style>
+</head>
+<body>
+<div class="game-container">
+  <div class="header">
+    <div class="title">AI AGENT OFFICE <span class="blink">▌</span></div>
+    <div class="agent-count" id="agentCountDisplay">AGENTS: 0</div>
+  </div>
+
+  <div class="game-screen">
+    <canvas id="officeCanvas" width="800" height="600"></canvas>
+  </div>
+
+  <div class="controls">
+    <input type="text" class="task-input" id="taskInput"
+      placeholder="ENTER TASK..." maxlength="120"
+      autocomplete="off">
+    <button class="btn" id="sendBtn">⏎ GO</button>
+  </div>
+
+  <div class="status-bar">
+    <span id="statusText">🟢 READY</span>
+    <span class="highlight" id="activityText"></span>
+  </div>
+</div>
+
+<script>
+(function() {
+  // ─── CONFIG ──────────────────────────────────────────────
+  const CANVAS_W = 800, CANVAS_H = 600;
+  const COLS = 20, ROWS = 15;
+  const TILE = 40;
+
+  // ─── AGENTS ──────────────────────────────────────────────
+  const AGENTS = [
+    { name: 'CLAUDE', color: '#d4a574', hair: '#8b5e3c', deskCol: 2, deskRow: 2 },
+    { name: 'GPT',    color: '#74b9ff', hair: '#2d6da8', deskCol: 6, deskRow: 2 },
+    { name: 'GEMINI', color: '#a8e6cf', hair: '#3b8c6e', deskCol: 10, deskRow: 2 },
+    { name: 'LOUIS',  color: '#e17055', hair: '#a0402f', deskCol: 14, deskRow: 2 },
+    { name: 'MISTRAL',color: '#c490d4', hair: '#7b4d8a', deskCol: 4, deskRow: 9 },
+    { name: 'LLAMA',  color: '#f8d49a', hair: '#b8860b', deskCol: 8, deskRow: 9 },
+    { name: 'DEEPSEEK',color:'#81ecec', hair: '#00b894', deskCol: 12, deskRow: 9 },
+    { name: 'COPILOT',color: '#b0b0ff', hair: '#5050a0', deskCol: 16, deskRow: 9 },
+  ];
+
+  // ─── DIALOGUE LINES ──────────────────────────────────────
+  const DISCUSSIONS = [
+    'Hmm, let me\nanalyze this...',
+    'I think we need\nmore context.',
+    'What about the\narchitecture?',
+    'Good point!\nLet me check...',
+    'I can handle\nthe frontend.',
+    'Backend needs\na rethink.',
+    'Have we tried\nasync approach?',
+    'The data layer\nis the key.',
+    'Let me review\nthe requirements.',
+    'I suggest we\nREST API here.',
+    'Security first,\nthen features.',
+    'Deploy strategy\nneeds planning.',
+    'Wait, let me\nre-read the task.',
+    'Testing should\nbe automated.',
+    'Documentation\nis important too.',
+    'I\'ll handle the\ndatabase schema.',
+    'What about the\nCI/CD pipeline?',
+    'Let\'s keep it\nsimple for now.',
+    'Edge cases?\nLet me think...',
+    'Performance is\na priority.',
+  ];
+
+  // ─── MEETING POINTS ──────────────────────────────────────
+  const MEETING_POINTS = [
+    { col: 5, row: 5 },
+    { col: 14, row: 5 },
+    { col: 10, row: 12 },
+    { col: 3, row: 12 },
+    { col: 9, row: 7 },
+  ];
+  let meetIndex = 0;
+
+  // ─── STATE ───────────────────────────────────────────────
+  const canvas = document.getElementById('officeCanvas');
+  const ctx = canvas.getContext('2d');
+  canvas.style.width = '800px';
+  canvas.style.height = '600px';
+
+  let agents = [];
+  let discussions = [];
+  let taskHistory = [];
+  let isRunning = false;
+  let frame = 0;
+  let idleTimer = 0;
+
+  // ─── AGENT CLASS ─────────────────────────────────────────
+  class Agent {
+    constructor(cfg, idx) {
+      this.idx = idx;
+      this.name = cfg.name;
+      this.color = cfg.color;
+      this.hair = cfg.hair;
+      // Grid positions stored in tile coords, drawn in pixels
+      this.homeX = cfg.deskCol + 0.5;
+      this.homeY = cfg.deskRow + 0.5;
+      this.x = this.homeX;
+      this.y = this.homeY;
+      this.targetX = this.x;
+      this.targetY = this.y;
+      this.moving = false;
+      this.path = [];
+      this.pathIndex = 0;
+      this.speed = 0.04;
+      this.walkFrame = 0;
+      this.walkCycle = 0;
+      this.dir = 0; // 0=down,1=left,2=right,3=up
+      this.dialogue = null;
+      this.dialogueTimer = 0;
+      this.active = true;
+    }
+
+    setTarget(gx, gy) {
+      this.targetX = gx;
+      this.targetY = gy;
+      this.path = this.findPath(
+        Math.floor(this.x), Math.floor(this.y),
+        Math.floor(gx), Math.floor(gy)
+      );
+      this.pathIndex = 0;
+      this.moving = true;
+    }
+
+    findPath(sx, sy, ex, ey) {
+      // Simple grid-based pathfinding (BFS)
+      const visited = new Set();
+      const queue = [{ x: sx, y: sy, path: [] }];
+      while (queue.length > 0) {
+        const { x, y, path } = queue.shift();
+        if (x === ex && y === ey) {
+          return path;
+        }
+        const key = `${x},${y}`;
+        if (visited.has(key)) continue;
+        visited.add(key);
+        const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
+        for (const [dx, dy] of dirs) {
+          const nx = x + dx, ny = y + dy;
+          if (nx < 0 || nx >= COLS || ny < 0 || ny >= ROWS) continue;
+          if (isOccupied(nx, ny, this)) continue;
+          const nkey = `${nx},${ny}`;
+          if (visited.has(nkey)) continue;
+          queue.push({ x: nx, y: ny, path: [...path, { x: nx, y: ny }] });
+        }
+      }
+      return [];
+    }
+
+    say(text) {
+      this.dialogue = text;
+      this.dialogueTimer = 180; // ~3 seconds at 60fps
+    }
+
+    update() {
+      if (this.moving) {
+        const dx = this.targetX - this.x;
+        const dy = this.targetY - this.y;
+        const dist = Math.sqrt(dx*dx + dy*dy);
+
+        // Update direction based on movement
+        if (Math.abs(dx) > Math.abs(dy)) {
+          this.dir = dx > 0 ? 2 : 1;
+        } else {
+          this.dir = dy > 0 ? 0 : 3;
+        }
+
+        if (dist > 0.1) {
+          this.x += (dx / dist) * this.speed;
+          this.y += (dy / dist) * this.speed;
+          this.walkCycle += 0.08;
+          this.walkFrame = Math.floor(this.walkCycle) % 4;
+        } else {
+          this.x = this.targetX;
+          this.y = this.targetY;
+          this.moving = false;
+          this.walkFrame = 0;
+
+          // If we have a path, move to next waypoint
+          if (this.pathIndex < this.path.length) {
+            const next = this.path[this.pathIndex];
+            this.pathIndex++;
+            this.targetX = next.x + 0.5;
+            this.targetY = next.y + 0.5;
+            this.moving = true;
+          }
+        }
+      }
+
+      // Update dialogue timer
+      if (this.dialogue) {
+        this.dialogueTimer--;
+        if (this.dialogueTimer <= 0) {
+          this.dialogue = null;
+          this.say('...');
+          this.dialogueTimer = 30;
+        }
+        if (this.dialogueTimer <= 0) {
+          this.dialogue = null;
+        }
+      }
+    }
+
+    draw(ctx) {
+      const px = this.x * TILE;
+      const py = this.y * TILE;
+      const s = TILE; // scale
+      const wobble = this.moving ? Math.sin(this.walkCycle * Math.PI * 2) * 2 : 0;
+
+      // Shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.3)';
+      ctx.beginPath();
+      ctx.ellipse(px, py + s*0.35, s*0.25, s*0.08, 0, 0, Math.PI*2);
+      ctx.fill();
+
+      // Body
+      const bodyW = s * 0.45;
+      const bodyH = s * 0.35;
+      const bpx = px - bodyW/2;
+      const bpy = py - s*0.35 + wobble;
+
+      ctx.fillStyle = this.color;
+      ctx.fillRect(bpx, bpy, bodyW, bodyH);
+
+      // Darker outline
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 1.5;
+      ctx.strokeRect(bpx, bpy, bodyW, bodyH);
+
+      // Head
+      const headR = s * 0.18;
+      ctx.fillStyle = '#f0c8a0';
+      ctx.beginPath();
+      ctx.arc(px, py - s*0.35 - headR + wobble, headR, 0, Math.PI*2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Hair (simple hat/spike)
+      ctx.fillStyle = this.hair;
+      const hairY = py - s*0.35 - headR*2 + wobble;
+      ctx.fillRect(px - headR, hairY, headR*2, headR*0.8);
+      ctx.strokeRect(px - headR, hairY, headR*2, headR*0.8);
+
+      // Eyes
+      const eyeY = py - s*0.35 - headR*0.2 + wobble;
+      ctx.fillStyle = '#333';
+      ctx.fillRect(px - 4, eyeY, 3, 3);
+      ctx.fillRect(px + 2, eyeY, 3, 3);
+
+      // Mouth (smile or neutral)
+      ctx.fillStyle = '#c07060';
+      ctx.fillRect(px - 3, eyeY + 6, 6, 2);
+
+      // Name label
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(px - 24, py + 6, 48, 12);
+      ctx.fillStyle = '#fff';
+      ctx.font = '7px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(this.name, px, py + 15);
+
+      // Walking legs
+      if (this.moving) {
+        ctx.fillStyle = '#333';
+        const legOff = Math.sin(this.walkCycle * Math.PI * 2) * 3;
+        ctx.fillRect(px - 6, py + wobble, 4, 6 + legOff);
+        ctx.fillRect(px + 2, py + wobble, 4, 6 - legOff);
+      }
+
+      // Dialogue bubble
+      if (this.dialogue) {
+        const bubW = 100;
+        const bubH = 40;
+        const bubX = px - bubW/2;
+        const bubY = py - s*0.7 - bubH - 10 + wobble;
+
+        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(bubX, bubY, bubW, bubH, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        // Tail
+        ctx.fillStyle = 'rgba(255,255,255,0.92)';
+        ctx.beginPath();
+        ctx.moveTo(px - 5, bubY + bubH);
+        ctx.lineTo(px, bubY + bubH + 6);
+        ctx.lineTo(px + 5, bubY + bubH);
+        ctx.closePath();
+        ctx.fill();
+
+        // Text
+        ctx.fillStyle = '#222';
+        ctx.font = '6px monospace';
+        ctx.textAlign = 'center';
+        const lines = this.dialogue.split('\n');
+        lines.forEach((line, i) => {
+          ctx.fillText(line, px, bubY + 12 + i * 12);
+        });
+      }
+    }
+  }
+
+  // ─── HELPERS ─────────────────────────────────────────────
+  function isOccupied(col, row, excludeAgent) {
+    for (const a of agents) {
+      if (a === excludeAgent) continue;
+      if (Math.floor(a.x) === col && Math.floor(a.y) === row) return true;
+    }
+    return false;
+  }
+
+  function rand(min, max) {
+    return Math.random() * (max - min) + min;
+  }
+
+  function randInt(min, max) {
+    return Math.floor(rand(min, max + 1));
+  }
+
+  function pick(arr) {
+    return arr[randInt(0, arr.length - 1)];
+  }
+
+  // ─── DRAWING ─────────────────────────────────────────────
+  function drawFloor() {
+    for (let r = 0; r < ROWS; r++) {
+      for (let c = 0; c < COLS; c++) {
+        const dark = (r + c) % 2 === 0;
+        ctx.fillStyle = dark ? '#2a2a4a' : '#222244';
+        ctx.fillRect(c * TILE, r * TILE, TILE, TILE);
+
+        // Subtle grid lines
+        ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+        ctx.lineWidth = 0.5;
+        ctx.strokeRect(c * TILE, r * TILE, TILE, TILE);
+
+        // Random floor "dirt" pixel for retro feel
+        if (Math.random() < 0.02) {
+          ctx.fillStyle = 'rgba(255,255,255,0.03)';
+          ctx.fillRect(c * TILE + 8, r * TILE + 8, 4, 4);
+        }
+      }
+    }
+  }
+
+  function drawWalls() {
+    // Top and bottom walls
+    ctx.fillStyle = '#1a1a3e';
+    ctx.fillRect(0, 0, CANVAS_W, 4);
+    ctx.fillRect(0, ROWS * TILE - 4, CANVAS_W, 4);
+    ctx.fillRect(0, 0, 4, ROWS * TILE);
+    ctx.fillRect(COLS * TILE - 4, 0, 4, ROWS * TILE);
+
+    // Corner decorations
+    ctx.fillStyle = '#e94560';
+    [
+      [0, 0], [CANVAS_W - 8, 0],
+      [0, ROWS * TILE - 8], [CANVAS_W - 8, ROWS * TILE - 8]
+    ].forEach(([x, y]) => {
+      ctx.fillRect(x, y, 8, 8);
+    });
+  }
+
+  function drawDesk(col, row) {
+    const x = col * TILE;
+    const y = row * TILE;
+    const pad = 4;
+
+    // Desk top (wooden)
+    ctx.fillStyle = '#5d4037';
+    ctx.fillRect(x + pad, y + pad, TILE - pad*2, TILE - pad*2);
+    ctx.strokeStyle = '#3e2723';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(x + pad, y + pad, TILE - pad*2, TILE - pad*2);
+
+    // Monitor
+    const monW = 16, monH = 12;
+    const mx = x + (TILE - monW) / 2;
+    const my = y + pad + 4;
+
+    // Stand
+    ctx.fillStyle = '#666';
+    ctx.fillRect(mx + 5, my + monH - 2, 6, 4);
+
+    // Screen
+    ctx.fillStyle = '#0a0a2e';
+    ctx.fillRect(mx, my, monW, monH - 2);
+    ctx.strokeStyle = '#444';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(mx, my, monW, monH - 2);
+
+    // Screen glow
+    ctx.fillStyle = 'rgba(100,200,255,0.12)';
+    ctx.fillRect(mx + 2, my + 2, monW - 4, monH - 6);
+
+    // CPU unit (small box under desk side)
+    ctx.fillStyle = '#444';
+    ctx.fillRect(x + TILE - 8, y + TILE - 6, 6, 5);
+  }
+
+  function drawOffice() {
+    // Plants
+    const plants = [
+      { col: 0, row: 0 },
+      { col: COLS - 1, row: 0 },
+      { col: 0, row: ROWS - 1 },
+      { col: COLS - 1, row: ROWS - 1 },
+    ];
+    plants.forEach(({ col, row }) => {
+      const x = col * TILE + TILE/2;
+      const y = row * TILE + TILE/2;
+      // Pot
+      ctx.fillStyle = '#8d6e63';
+      ctx.fillRect(x - 6, y + 4, 12, 10);
+      ctx.strokeStyle = '#5d4037';
+      ctx.strokeRect(x - 6, y + 4, 12, 10);
+      // Leaves
+      ctx.fillStyle = '#4caf50';
+      for (let i = 0; i < 5; i++) {
+        const angle = i * 1.2;
+        ctx.fillRect(
+          x + Math.cos(angle) * 6 - 2,
+          y - 4 + Math.sin(angle) * 6 - 2,
+          4, 6
+        );
+      }
+    });
+
+    // Water cooler at specific position
+    const wcX = 18 * TILE + 6;
+    const wcY = 7 * TILE + 6;
+    ctx.fillStyle = '#4fc3f7';
+    ctx.fillRect(wcX, wcY, 10, 16);
+    ctx.fillStyle = '#0288d1';
+    ctx.fillRect(wcX + 1, wcY + 2, 8, 3);
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(wcX + 3, wcY + 8, 4, 6);
+  }
+
+  // ─── ANIMATION LOOP ──────────────────────────────────────
+  function update() {
+    frame++;
+
+    // Update agents
+    agents.forEach(a => a.update());
+
+    // Update discussion animations
+    discussions = discussions.filter(d => {
+      d.timer--;
+      return d.timer > 0;
+    });
+
+    // Random idle animations every few seconds
+    if (frame % 120 === 0 && !isRunning) {
+      const agent = pick(agents);
+      if (!agent.moving) {
+        const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
+        const dir = pick(dirs);
+        const nx = Math.floor(agent.x) + dir[0];
+        const ny = Math.floor(agent.y) + dir[1];
+        if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS && !isOccupied(nx, ny, agent)) {
+          agent.setTarget(nx + 0.5, ny + 0.5);
+          setTimeout(() => {
+            if (!agent.moving) agent.setTarget(agent.homeX, agent.homeY);
+          }, 1500);
+        }
+      }
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+    drawFloor();
+    drawWalls();
+
+    // Draw desks for each agent
+    agents.forEach(a => {
+      drawDesk(Math.floor(a.homeX), Math.floor(a.homeY));
+    });
+
+    drawOffice();
+
+    // Sort agents by Y for depth sorting
+    const sorted = [...agents].sort((a, b) => a.y - b.y);
+    sorted.forEach(a => a.draw(ctx));
+
+    // Task history display at bottom
+    if (taskHistory.length > 0) {
+      ctx.fillStyle = 'rgba(0,0,0,0.5)';
+      ctx.fillRect(4, ROWS * TILE - 20, CANVAS_W - 8, 18);
+      ctx.fillStyle = '#f0e68c';
+      ctx.font = '7px monospace';
+      ctx.textAlign = 'left';
+      const last = taskHistory[taskHistory.length - 1];
+      ctx.fillText(`▶ ${last}`, 10, ROWS * TILE - 8);
+    }
+
+    // Vignette overlay
+    const grad = ctx.createRadialGradient(
+      CANVAS_W/2, CANVAS_H/2, CANVAS_H*0.5,
+      CANVAS_W/2, CANVAS_H/2, CANVAS_H
+    );
+    grad.addColorStop(0, 'rgba(0,0,0,0)');
+    grad.addColorStop(1, 'rgba(0,0,0,0.25)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, CANVAS_W, CANVAS_H);
+
+    // Subtle glow around monitors
+    agents.forEach(a => {
+      const mx = Math.floor(a.homeX) * TILE + TILE/2;
+      const my = Math.floor(a.homeY) * TILE + TILE/4;
+      ctx.fillStyle = 'rgba(100,200,255,0.04)';
+      ctx.beginPath();
+      ctx.arc(mx, my, 16, 0, Math.PI*2);
+      ctx.fill();
+    });
+  }
+
+  function gameLoop() {
+    update();
+    draw();
+    requestAnimationFrame(gameLoop);
+  }
+
+  // ─── TASK HANDLING ───────────────────────────────────────
+  function submitTask(text) {
+    if (!text || text.trim() === '') return;
+    const task = text.trim();
+    isRunning = true;
+    taskHistory.push(task);
+    if (taskHistory.length > 20) taskHistory.shift();
+
+    document.getElementById('statusText').textContent = '🔄 PROCESSING...';
+
+    // Pick random agents to discuss (3-4 agents)
+    const numAgents = randInt(3, Math.min(4, agents.length));
+    const shuffled = [...agents].sort(() => Math.random() - 0.5);
+    const participants = shuffled.slice(0, numAgents);
+
+    // Send them to random meeting points
+    const meeting = MEETING_POINTS[meetIndex % MEETING_POINTS.length];
+    meetIndex++;
+
+    participants.forEach((agent, i) => {
+      setTimeout(() => {
+        const offsetX = (i % 2) * 0.6;
+        const offsetY = Math.floor(i / 2) * 0.6;
+        agent.setTarget(meeting.col + 1 + offsetX, meeting.row + 1 + offsetY);
+      }, i * 400);
+    });
+
+    // Start dialogue sequence after agents arrive
+    const totalDelay = numAgents * 400 + 2000;
+    const discussionLines = [];
+    const usedIndices = new Set();
+
+    // Generate discussion based on task
+    let lines = [
+      `Task: "${task.length > 30 ? task.substring(0, 28) + '..' : task}"`,
+      'Interesting...',
+      pick(DISCUSSIONS),
+      pick(DISCUSSIONS),
+      pick(DISCUSSIONS),
+      pick(DISCUSSIONS),
+      'Agreed! 🤝',
+      "Let's do it! ⚡",
+    ];
+
+    participants.forEach((agent, i) => {
+      setTimeout(() => {
+        agent.say(lines[i % lines.length]);
+      }, totalDelay + i * 2000);
+    });
+
+    // Additional random conversations in background
+    const bgAgents = agents.filter(a => !participants.includes(a));
+    bgAgents.forEach(agent => {
+      setTimeout(() => {
+        if (Math.random() < 0.4) {
+          agent.say('...');
+        }
+      }, totalDelay + rand(0, 3000));
+    });
+
+    // Status updates
+    setTimeout(() => {
+      document.getElementById('statusText').textContent = '💬 DISCUSSING...';
+    }, totalDelay - 500);
+
+    setTimeout(() => {
+      document.getElementById('statusText').textContent = '✅ COMPLETE';
+      participants.forEach(a => {
+        setTimeout(() => {
+          a.setTarget(a.homeX, a.homeY);
+        }, rand(500, 2000));
+      });
+      setTimeout(() => {
+        isRunning = false;
+        document.getElementById('statusText').textContent = '🟢 READY';
+      }, 4000);
+    }, totalDelay + participants.length * 2000 + 1000);
+
+    // Update agent count display
+    document.getElementById('agentCountDisplay').textContent =
+      `AGENTS: ${agents.length}`;
+  }
+
+  // ─── INIT ────────────────────────────────────────────────
+  function init() {
+    agents = AGENTS.map((cfg, idx) => new Agent(cfg, idx));
+    document.getElementById('agentCountDisplay').textContent =
+      `AGENTS: ${AGENTS.length}`;
+
+    const input = document.getElementById('taskInput');
+    const btn = document.getElementById('sendBtn');
+
+    function handleSubmit() {
+      if (isRunning) return;
+      submitTask(input.value);
+      input.value = '';
+    }
+
+    btn.addEventListener('click', handleSubmit);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') handleSubmit();
+    });
+
+    // Auto-demo: show a task after 5 seconds of idle
+    let autoDemo = setTimeout(() => {
+      if (!isRunning && taskHistory.length === 0) {
+        const demos = [
+          'Design new landing page',
+          'Fix payment gateway bug',
+          'Optimize database queries',
+          'Review pull request #42',
+          'Update API documentation',
+        ];
+        submitTask(pick(demos));
+      }
+    }, 5000);
+
+    input.addEventListener('focus', () => clearTimeout(autoDemo));
+
+    gameLoop();
+  }
+
+  // Canvas roundRect polyfill for older browsers
+  if (!CanvasRenderingContext2D.prototype.roundRect) {
+    CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+      if (r > w/2) r = w/2;
+      if (r > h/2) r = h/2;
+      this.moveTo(x + r, y);
+      this.lineTo(x + w - r, y);
+      this.quadraticCurveTo(x + w, y, x + w, y + r);
+      this.lineTo(x + w, y + h - r);
+      this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      this.lineTo(x + r, y + h);
+      this.quadraticCurveTo(x, y + h, x, y + h - r);
+      this.lineTo(x, y + r);
+      this.quadraticCurveTo(x, y, x + r, y);
+      return this;
+    };
+  }
+
+  document.addEventListener('DOMContentLoaded', init);
+  if (document.readyState !== 'loading') init();
+})();
+</script>
+</body>
+</html>
