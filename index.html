@@ -174,7 +174,7 @@
   const ro = document.getElementById('resultOverlay');
 
   let agents = [], frame = 0, isRunning = false, lastV = 0, mode = 'local';
-  let taskHist = [], state = null;
+  let taskHist = [], state = null, lastResult = null;
 
   // ─── AGENT CLASS ─────────────────────────────────────────
   class A {
@@ -320,16 +320,23 @@
     if(s.phase==='idle') {
       agents.forEach(a=>{if(Math.floor(a.x)===Math.floor(a.hx)&&Math.floor(a.y)===Math.floor(a.hy)){}else a.home();});
       isRunning=false;
+      // Keep board from last result if no new result
+      if(lastResult) updateBoard(lastResult);
     }
     updCount();
   }
 
   function showResult(r) {
+    lastResult=r; // persist
     document.getElementById('resultWinner').textContent=r.winner||'';
     document.getElementById('resultScore').textContent=r.score||'';
     document.getElementById('resultAnalysis').textContent=r.analysis||'';
     ro.classList.add('show');
-    // Update results board
+    updateBoard(r);
+  }
+
+  function updateBoard(r) {
+    if(!r) return;
     const board=document.getElementById('resBoard');
     document.getElementById('rbTournament').textContent=r.tournament||'—';
     document.getElementById('rbTeams').textContent=r.teams||'—';
