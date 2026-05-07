@@ -1,8 +1,8 @@
 {
-  "version": 17,
+  "version": 18,
   "task": "null",
   "phase": "idle",
-  "timestamp": "2026-05-07T11:35:28.055Z",
+  "timestamp": "2026-05-07T11:42:34.468Z",
   "agent_states": {
     "CLAUDE": {
       "dialogue": "Aston Villa strong at\\nhome in Europe.\\nEmery's tactics key.",
