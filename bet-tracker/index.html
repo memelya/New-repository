@@ -118,7 +118,7 @@
 
 <script>
 (function() {
-  const DATA_URL = 'https://raw.githubusercontent.com/memelya/New-repository/main/bet-state.json';
+  const DATA_URL = 'https://raw.githubusercontent.com/memelya/New-repository/main/bet-tracker/bet-state.json';
 
   // Default data if fetch fails
   const FALLBACK_DATA = {
@@ -134,6 +134,7 @@
 
   let data = null;
 
+  function stxt(v) { return v===null||v===undefined?'—':String(v); }
   function updateUI(d) {
     const bets = d.bets || [];
     const total = bets.length;
@@ -235,16 +236,16 @@
       const resultClass=b.result==='won'?'won':b.result==='lost'?'lost':'pending';
       const plVal=parseFloat(b.pl||0);
       const plClass=plVal>0?'won':plVal<0?'lost':'pending';
-      tr.innerHTML=\`
-        <td>\${b.date||'—'}</td>
-        <td>\${b.tournament||'—'}</td>
-        <td>\${b.match||'—'}</td>
-        <td>\${b.bet||'—'}</td>
-        <td>\${b.stake||'—'}</td>
-        <td>x\${b.odds||'—'}</td>
-        <td class="\${resultClass}">\${b.result.toUpperCase()}</td>
-        <td class="\${plClass}">\${plVal>0?'+':''}\${b.pl||'0.00'}</td>
-      \`;
+      tr.innerHTML=[
+        '<td>'+stxt(b.date)+'</td>',
+        '<td>'+stxt(b.tournament)+'</td>',
+        '<td>'+stxt(b.match)+'</td>',
+        '<td>'+stxt(b.bet)+'</td>',
+        '<td>'+stxt(b.stake)+'</td>',
+        '<td>x'+stxt(b.odds)+'</td>',
+        '<td class="'+resultClass+'">'+b.result.toUpperCase()+'</td>',
+        '<td class="'+plClass+'">'+(plVal>0?'+':'')+stxt(b.pl||'0.00')+'</td>'
+      ].join('');
       tbody.appendChild(tr);
     });
   }
